@@ -5,8 +5,8 @@
 {{ super() }}
 <br><br><br><br><br>
 <section class="content">
-    <div class="col-sm-8 col-sm-offset-2">
-        <div class="well">
+    <div class="col-sm-4 col-sm-offset-4">
+        <div class="well transp_white">
                 <h1>Login</h1>
             <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
                 {{ login_user_form.hidden_tag() }}

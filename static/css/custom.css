@@ -3,3 +3,25 @@ input[type=radio] {
     width: 25px !important;
     -webkit-appearance: checkbox  !important;
 }
+
+.high_vh {
+
+    height: 100vh !important;
+    background-size:     cover; 
+    background-repeat:   no-repeat;
+    background-position: center center; 
+}
+
+.center_v {
+
+   margin: 0;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   -ms-transform: translate(-50%, -50%);
+   transform: translate(-50%, -50%);
+}
+
+.transp_white{
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}

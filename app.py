@@ -34,8 +34,8 @@ def index():
 
 admin = flask_admin.Admin(
     app,
-    'Arrhytmia Classifier',
-    base_template='my_master.html',
+    'Coffe Bean Classifier',
+    base_template='home.html',
     template_mode='bootstrap3',
     index_view=MyHomeView(),
     category_icon_classes={

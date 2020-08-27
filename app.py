@@ -34,7 +34,7 @@ def index():
 
 admin = flask_admin.Admin(
     app,
-    'Coffe Bean Classifier',
+    'Coffee Bean Classifier',
     base_template='user_info.html',
     template_mode='bootstrap3',
     index_view=MyHomeView(),

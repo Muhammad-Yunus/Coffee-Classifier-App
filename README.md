@@ -11,5 +11,6 @@ Flask based web app for Coffee Bean Classification
 | ML Backend                          | Tensorflow 2 (with Keras) |
 | Preprocessing                       | Scikit-Image              |
 
+
 ### CI/CD 
 - Jenkins (Build, Test & Deploy)

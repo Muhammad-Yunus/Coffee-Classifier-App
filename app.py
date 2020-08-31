@@ -11,11 +11,13 @@ from flask_admin import BaseView, AdminIndexView, expose
 from models import db
 from models.roles import Role 
 from models.users import User
+from models.inferences import Inference
 
 from views.custom_view import MyModelView 
 from views.users import UserView
 from views.profile import Profile
 from views.home import MyHomeView
+from views.infrences import InferenceView
 
 
 app = Flask(__name__)
@@ -47,6 +49,7 @@ admin = flask_admin.Admin(
 admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
 admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
 admin.add_view(Profile(name="Profile", endpoint='profile'))
+admin.add_view(InferenceView(Inference, db.session, menu_icon_type='fa', menu_icon_value='fa-search', name="Inferences"))
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.

@@ -12,4 +12,4 @@ Flask based web app for Coffee Bean Classification
 | Preprocessing                       | Scikit-Image              |
 
 ### CI/CD 
-- Jenkins
+- Jenkins (Build, Test & Deploy)

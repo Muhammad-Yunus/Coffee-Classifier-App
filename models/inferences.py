@@ -1,5 +1,4 @@
 from . import db
-from . import roles_users
 from . import UserMixin
 
 class Inference(db.Model, UserMixin):

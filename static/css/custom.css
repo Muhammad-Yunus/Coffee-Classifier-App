@@ -25,3 +25,15 @@ input[type=radio] {
 .transp_white{
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
+
+#message {
+    position: fixed;
+    top: 10%;
+}
+#inner-message {
+    margin: 0 auto;
+}
+
+.shadow_custom{
+    box-shadow: 0 .9rem .7rem rgba(0,0,0,.15) !important;
+}

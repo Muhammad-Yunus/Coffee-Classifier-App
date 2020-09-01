@@ -12,3 +12,10 @@ class Inference(db.Model, UserMixin):
 
     def __str__(self):
         return self.email
+
+class Upload(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    upload_at = db.Column(db.DateTime())
+    upload_by = db.Column(db.String(255))
+    Inference_Id = db.Column(db.Integer)

@@ -159,6 +159,14 @@
     {# store the jinja2 context for form_rules rendering logic #}
     {% set render_ctx = h.resolve_ctx() %}
 
+    {% if show_feedback %}
+    <div id="message" style="padding: 15px 20% 0px 20%; z-index: 20;">
+      <div id="inner-message" class="shadow_custom alert alert-{{ feedback_type }} alert-dismissible fade in">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        {{ feedback_message }}
+      </div>
+    </div>
+    {% endif %}
 
     {% block body %}
 
@@ -370,10 +378,21 @@
   <script src="{{url_for('static',filename='js/pages/dashboard.js')}}"></script>
 {% endif %}
 
+<!-- Custom Js -->
+<script>
+  window.setTimeout(function() { // hide alert message
+    $("#inner-message").toggleClass('in','out'); 
+
+  }, 3000);
+</script>
+
 {% endblock tail_js%}
 
 {% block tail %}
 {% endblock tail %}
 
+{% block js_custom %}
+
+{% endblock js_custom %}
 </body>
 </html>

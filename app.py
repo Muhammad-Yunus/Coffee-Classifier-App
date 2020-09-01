@@ -13,15 +13,16 @@ from models.roles import Role
 from models.users import User
 from models.inferences import Inference
 
-from views.custom_view import MyModelView 
-from views.users import UserView
-from views.profile import Profile
-from views.home import MyHomeView
-from views.infrences import InferenceView
-
+from forms.custom_view import MyModelView 
+from forms.users import UserView
+from forms.profile import Profile
+from forms.home import MyHomeView
+from forms.infrences import InferenceView
+from forms.data import Data
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+
 db.init_app(app)
 db.app = app
 
@@ -50,6 +51,8 @@ admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_valu
 admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
 admin.add_view(Profile(name="Profile", endpoint='profile'))
 admin.add_view(InferenceView(Inference, db.session, menu_icon_type='fa', menu_icon_value='fa-search', name="Inferences"))
+admin.add_view(Data(name="Data", menu_icon_type='fa', menu_icon_value='fa-database', endpoint='data'))
+
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.
@@ -95,6 +98,7 @@ if __name__ == '__main__':
     # Build a sample db on the fly, if one does not exist yet.
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config['DATABASE_FILE'])
+
     if not os.path.exists(database_path):
         build_sample_db()
     

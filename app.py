@@ -23,7 +23,6 @@ from forms.infrences import InferenceForm, RunInferenceForm
 from forms.upload import UploadForm
 from forms.glcm import GlcmForm
 
-
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 

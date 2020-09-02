@@ -12,8 +12,8 @@ def save_image_fs(form_image):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_image.filename)
     image_fn = random_hex + f_ext
-    print (image_fn)
-    image_path = os.path.join('static/image-upload', image_fn)
+    root_path = os.path.dirname(os.path.dirname(__file__))
+    image_path = os.path.join(root_path, 'static/image-upload', image_fn)
 
     form_image.save(image_path)
 

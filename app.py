@@ -12,13 +12,17 @@ from models import db
 from models.roles import Role 
 from models.users import User
 from models.inferences import Inference
+from models.uploads import Upload 
+from models.glcms import Glcm
 
 from forms.custom_view import MyModelView 
 from forms.users import UserView
 from forms.profile import Profile
 from forms.home import MyHomeView
-from forms.infrences import InferenceView
-from forms.data import Data
+from forms.infrences import InferenceForm, RunInferenceForm
+from forms.upload import UploadForm
+from forms.glcm import GlcmForm
+
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -46,13 +50,15 @@ admin = flask_admin.Admin(
     }
 )
 
+
 # Add model views
 admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
 admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
 admin.add_view(Profile(name="Profile", endpoint='profile'))
-admin.add_view(InferenceView(Inference, db.session, menu_icon_type='fa', menu_icon_value='fa-search', name="Inferences"))
-admin.add_view(Data(name="Data", menu_icon_type='fa', menu_icon_value='fa-database', endpoint='data'))
-
+admin.add_view(UploadForm(name="Upload", menu_icon_type='fa', menu_icon_value='fa-upload', endpoint='upload'))
+admin.add_view(GlcmForm(name="GLCM", menu_icon_type='fa', menu_icon_value='fa-braille', endpoint='glcm'))
+admin.add_view(RunInferenceForm(name="Run Inference", menu_icon_type='fa', menu_icon_value='fa-bar-chart', endpoint='run_inference'))
+admin.add_view(InferenceForm(Inference, db.session, menu_icon_type='fa', menu_icon_value='fa-database', name="History"))
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.

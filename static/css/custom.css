@@ -37,3 +37,16 @@ input[type=radio] {
 .shadow_custom{
     box-shadow: 0 .9rem .7rem rgba(0,0,0,.15) !important;
 }
+
+li.paginate_button.disabled > a {
+    color: lightgrey;
+}
+
+.my-custom-scrollbar {
+    height: 50vh;
+    overflow-y: overlay;
+}
+
+.selected_item {
+    background: lightgray;
+}

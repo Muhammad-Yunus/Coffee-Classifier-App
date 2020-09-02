@@ -1,0 +1,187 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+
+{% if current_user.is_authenticated %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    <i class="fa fa-bar-chart"></i>
+    Inference
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-tag"></i> Inference Result
+        </h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body text-center">
+        <img src="{% if selectedImage %}/static/image-upload/{{ selectedImage }} {% else %} /static/img/no-image.png {% endif %}" alt="no image" class="img-rounded" style="max-width: 225px;">
+        {% if selectedImage %}
+            {{ selectedImage }}
+        {% endif%}
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer padding">
+            <div class="info-box bg-light-blue">
+                <span class="info-box-icon"><i class="fa fa-bar-chart-o"></i></span>
+    
+                <div class="info-box-content">
+                  <span class="info-box-text" >{{ result_label if result_label else 'Dark Coffee' }}</span>
+                  <span class="info-box-number">{{ confidence if confidence else '90' }}<small>%</small></span>
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 90%"></div>
+                  </div>
+                  <span class="progress-description">
+                    3% better than previous inference.
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+        </div>
+        <!-- /.box-footer-->
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Feature Data
+          </h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+                        <!-- GLCM Tablerecords -->
+                        {% if glcmRecords  %}
+                        <div class="box-body table-responsive no-padding my-custom-scrollbar">
+                        <table class="table table-hover">
+                            <tbody><tr>
+                            <th>Angel</th>
+                            <th>Dissimilarity</th>
+                            <th>Correlation</th>
+                            <th>Homogeneity</th>
+                            <th>Contrast</th>
+                            <th>ASM</th>
+                            <th>Energy</th>
+                            </tr>
+                            {% for record in glcmRecords  %}
+                            <tr>
+                            <td>{{ record['angel'] }}</td>
+                            <td>{{ record['dissimilarity'] }}</td>
+                            <td>{{ record['correlation'] }}</td>
+                            <td>{{ record['homogeneity'] }}</td>
+                            <td>{{ record['contrast'] }}</td>
+                            <td>{{ record['ASM'] }}</td>
+                            <td>{{ record['energy'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody></table>
+                        </div>
+                        {% else %}
+                        No GLCM data to show, please select image to view GLCM data on left panel. 
+                        {% endif %}
+        </div>
+        <!-- /.box-body -->
+      </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Explain Result
+            </h3>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+            <div class="row">
+                <div class="col-md-6">
+                  <div class="chart-responsive">
+                    <canvas id="pieChart" height="155" width="205" style="width: 205px; height: 155px;"></canvas>
+                  </div>
+                  <!-- ./chart-responsive -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-6">
+                  <ul class="chart-legend clearfix">
+                    {% for key in result_dict %}
+                        {% if key != 'result' %}
+                            <li><i class="fa fa-circle-o text-red"></i> {{ key }}</li>
+                        {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+                <!-- /.col -->
+              </div>
+          </div>
+          <!-- /.box-body -->
+        </div>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col-md-12"></div>
+  </div>
+</section>
+
+{% endif %}
+
+{% endblock body %}
+
+{% block js_custom %}
+<script>
+
+    // -------------
+    // - PIE CHART -
+    // -------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
+    var pieChart       = new Chart(pieChartCanvas);
+
+    // get dictionary from jinja convert to JSON
+    var dataChart      = JSON.parse('{{ result_dict|tojson|safe}}');
+    var PieData        = [];
+    var colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef'];
+    var i = 0
+    for (var key in dataChart){
+        if (key !== 'result'){
+            PieData.push({value : dataChart[key], label : key, color : colors[i]});
+            i = i + 1;
+        }
+    }
+    console.log(PieData);
+    var pieOptions     = {
+        // Boolean - Whether we should show a stroke on each segment
+        segmentShowStroke    : true,
+        // String - The colour of each segment stroke
+        segmentStrokeColor   : '#fff',
+        // Number - The width of each segment stroke
+        segmentStrokeWidth   : 1,
+        // Number - The percentage of the chart that we cut out of the middle
+        percentageInnerCutout: 50, // This is 0 for Pie charts
+        // Number - Amount of animation steps
+        animationSteps       : 100,
+        // String - Animation easing effect
+        animationEasing      : 'easeOutBounce',
+        // Boolean - Whether we animate the rotation of the Doughnut
+        animateRotate        : true,
+        // Boolean - Whether we animate scaling the Doughnut from the centre
+        animateScale         : false,
+        // Boolean - whether to make the chart responsive to window resizing
+        responsive           : true,
+        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+        maintainAspectRatio  : false,
+        // add tooltip
+        tooltipTemplate: "<%=label%> <%=value%> %"
+    };
+    // Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    pieChart.Doughnut(PieData, pieOptions);
+
+    // -----------------
+    // - END PIE CHART -
+    // -----------------
+
+</script>
+{% endblock js_custom %}

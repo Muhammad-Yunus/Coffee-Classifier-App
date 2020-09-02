@@ -32,6 +32,7 @@
                 <span class="info-box-icon"><i class="fa fa-bar-chart-o"></i></span>
     
                 <div class="info-box-content">
+                  {% if result_label != none %}
                   <span class="info-box-text" >{{ result_label if result_label else 'Dark Coffee' }}</span>
                   <span class="info-box-number">{{ confidence if confidence else '90' }}<small>%</small></span>
                   <div class="progress">
@@ -40,6 +41,9 @@
                   <span class="progress-description">
                     3% better than previous inference.
                   </span>
+                  {% else %}
+                  No result to show ... 
+                  {% endif %}
                 </div>
                 <!-- /.info-box-content -->
               </div>
@@ -56,7 +60,7 @@
         <!-- /.box-header -->
         <div class="box-body">
                         <!-- GLCM Tablerecords -->
-                        {% if glcmRecords  %}
+                        {% if glcmRecords.first() != none %}
                         <div class="box-body table-responsive no-padding my-custom-scrollbar">
                         <table class="table table-hover">
                             <tbody><tr>
@@ -82,7 +86,7 @@
                         </tbody></table>
                         </div>
                         {% else %}
-                        No GLCM data to show, please select image to view GLCM data on left panel. 
+                        No GLCM data to show ... 
                         {% endif %}
         </div>
         <!-- /.box-body -->
@@ -105,6 +109,7 @@
                 </div>
                 <!-- /.col -->
                 <div class="col-md-6">
+                  {% if result_dict != none %}
                   <ul class="chart-legend clearfix">
                     {% for key in result_dict %}
                         {% if key != 'result' %}
@@ -112,6 +117,7 @@
                         {% endif %}
                     {% endfor %}
                   </ul>
+                  {% endif %}
                 </div>
                 <!-- /.col -->
               </div>

@@ -10,9 +10,8 @@ from . import current_user
 from . import np
 import ast
 
-
 class InferenceForm(MyModelView):
-    
+    column_exclude_list = ['result_dict']
     def on_model_change(self, form, Inference, is_created):
 
         if is_created:
@@ -76,18 +75,22 @@ class RunInferenceForm(BaseView):
         x = init(request.args.get('upload_id'), request.args.get('inference_id'))
 
         formInference = select_inference(x['inference_id'])
-        x['upload_id'] = formInference.Upload_Id
+        if formInference is not None :
+            x['upload_id'] = formInference.Upload_Id
+            result_dict, result_label, confidence = \
+                ast.literal_eval(formInference.result_dict), formInference.result_label, formInference.confidence
+        else :
+            result_dict, result_label, confidence = None, None, None
         glcmRecords, selectedImage = query_glcm(x['upload_id'])
-
         return self.render('admin/inference.html',
                     show_feedback = x['show_feedback'],
                     feedback_type = x['feedback_type'],
                     feedback_message = x['feedback_message'],
                     glcmRecords = glcmRecords,
                     selectedImage = selectedImage, 
-                    result_dict = ast.literal_eval(formInference.result_dict),
-                    result_label = formInference.result_label, 
-                    confidence = formInference.confidence)
+                    result_dict = result_dict,
+                    result_label = result_label, 
+                    confidence = confidence)
 
     @expose("/run")
     def run(self):

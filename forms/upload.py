@@ -112,7 +112,7 @@ class UploadForm(BaseView):
                     table_search = x['table_search'])
 
     @expose("/delete")
-    def delete():
+    def delete(self):
         x = init(request.args.get('upload_id'), request.args.get('page'))
         x['show_feedback'], x['feedback_type'], x['feedback_message'], x['image_fn'] = delete_image(x['upload_id'])
         tableRecords, min_page_show, max_page_show, count = query_image(x['page'],x['per_page'],x['search_key'])

@@ -52,9 +52,9 @@
                         <img src="/static/image-upload/{{ record['name'] }}" alt="no image" class="img-rounded" style="max-width: 100px;">
                     </td>
                     <td>{% if not record['Inference_Id'] %}
-                        <a href="{{ url_for('glcm.calc', upload_id=record['id'], recalc=1) }}" class="btn btn-success btn-xs"><i class="fa fa-repeat"></i></a>
-                        <a href="{{ url_for('glcm.delete', upload_id=record['id']) }}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
-                        <a href="{{ url_for('glcm.index', upload_id=record['id']) }}" class="btn btn-primary btn-xs">view</a>
+                        <a href="{{ url_for('glcm.calc', upload_id=record['id'], recalc=1, page=request.args.get('page')) }}" class="btn btn-success btn-xs"><i class="fa fa-repeat"></i></a>
+                        <a href="{{ url_for('glcm.delete', upload_id=record['id'], page=request.args.get('page') ) }}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
+                        <a href="{{ url_for('glcm.index', upload_id=record['id'], page=request.args.get('page')) }}" class="btn btn-primary btn-xs">view</a>
                         {% endif %}
                     </td>
                   </tr>
@@ -141,9 +141,9 @@
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
-            <a href="{{ url_for('run_inference.run', upload_id=request.args.get('upload_id') ) if glcmRecords.first() else '#'}}" class="btn btn-sm btn-info pull-right" {{'disabled' if not glcmRecords.first() }}><i class="fa fa-sitemap"></i> Run Inference</a>
             <a href="{{ url_for('glcm.delete', upload_id=request.args.get('upload_id') ) if glcmRecords.first() else '#'}}" class="btn  btn-sm btn-danger" {{'disabled' if not glcmRecords.first() }}><i class="fa fa-trash"></i> Delete</a>
-            <a href="{{ url_for('upload.index') if glcmRecords.first() else '#'}}" class="btn  btn-sm btn-info" style="margin-left: 5px"><i class="fa fa-upload"></i> Upload more image?</a>
+            <a href="{{ url_for('upload.index') if glcmRecords.first() else '#'}}" class="btn  btn-sm btn-primary" style="margin-left: 5px"><i class="fa fa-upload"></i> Upload more image?</a>
+            <a href="{{ url_for('run_inference.run' if not has_inference else 'run_inference.index', upload_id=request.args.get('upload_id') ) if glcmRecords.first() else '#'}}" class="btn btn-sm btn-primary pull-right" {{'disabled' if not glcmRecords.first() }}><i class="fa fa-bar-chart"></i> {{ 'Run' if not has_inference else 'View'}} Inference</a>
         </div>
         <!-- /.box-footer-->
       </div>
@@ -154,6 +154,23 @@
   </div>
 </section>
 
+{% else %}
+  <center>
+  <section class="well transp_white center_v">
+    <div class="col-sm-12">
+      <h1>Coffe Bean Classifier App</h1>
+      <p class="lead">
+        Authentication
+      </p>
+      {% if not current_user.is_authenticated %}
+        <p>
+          <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+        </p>
+      {% endif %}
+      <br>
+    </div>
+  </section>
+  </center>
 {% endif %}
 
 {% endblock body %}

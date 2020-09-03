@@ -6,188 +6,138 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    <i class="fa fa-bar-chart"></i>
-    Inference
+    <i class="fa fa-database"></i>
+    Inference History
   </h1>
 </section>
 
 <section class="content">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
       <div class="box box-primary">
         <div class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-tag"></i> Inference Result
-        </h3>
+          <div class="row">
+            <div class="col-md-4">
+            <form method="POST" action="">
+              <div class="input-group input-group-sm hidden-xs" >            
+                <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" value="{{ table_search }}">
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+            </form>
+            </div>
+            <div class="col-md-2">
+              <a href="{{ url_for('inference.download', filename='export data - Inference.csv')}}" class="btn btn-primary btn-sm">
+                <i class="fa fa-download"></i> Export
+              </a>
+            </div>
         </div>
         <!-- /.box-header -->
-        <div class="box-body text-center">
-        <img src="{% if selectedImage %}/static/image-upload/{{ selectedImage }} {% else %} /static/img/no-image.png {% endif %}" alt="no image" class="img-rounded" style="max-width: 225px;">
-        {% if selectedImage %}
-            {{ selectedImage }}
-        {% endif%}
+        <div class="box-body">
+          <!-- GLCM Tablerecords -->
+          {% if tableRecords is not none  %}
+          <div class="box-body table-responsive no-padding my-custom-scrollbar">
+          <table class="table table-hover">
+              <tbody><tr>
+              <th>No</th>
+              <th>Image</th>
+              <th>Predicted Label</th>
+              <th>Confidence Level</th>
+              <th>Run At</th>
+              <th>Run By</th>
+              <th></th>
+              </tr>
+              {% for record in tableRecords.items  %}
+              <tr>
+              <td>{{ loop.index + tableRecords.per_page*(tableRecords.page - 1)  }}</td>
+              <td>{{ record.Upload['name'] }}</td>
+              <td>{{ record.Inference['result_label'] }}</td>
+              <td>{{ record.Inference['confidence'] }} %</td>
+              <td>{{ record.Inference['run_at'].strftime("%m/%d/%Y, %H:%M:%S") }}</td>
+              <td>{{ record.Inference['run_by'] }}</td>
+              <td>
+                <a href="{{ url_for('run_inference.index', inference_id=record.Inference['id']) }}" class="btn btn-primary btn-xs">
+                  <i class="fa fa-external-link"></i> Details
+                </a>
+                <a href="{{ url_for('run_inference.index', inference_id=record.Inference['id']) }}" class="btn btn-primary btn-xs">
+                  <i class="fa fa-repeat"></i> Re-run
+                </a>
+                <a href="{{ url_for('inference.image_download', filename=record.Upload['name']) }}" class="btn btn-primary btn-xs">
+                  <i class="fa fa-download"></i> Image
+                </a>
+                <a href="{{ url_for('inference.glcm_download', filename='GLCM_Image_' + record.Upload['name']) + '.csv' }}" class="btn btn-primary btn-xs">
+                  <i class="fa fa-download"></i> GLCM
+                </a>
+              </td>
+              </tr>
+              {% endfor %}
+          </tbody></table>
+          </div>
+          {% else %}
+          No Inference history to show ... 
+          {% endif %}
         </div>
         <!-- /.box-body -->
-        <div class="box-footer padding">
-            <div class="info-box bg-light-blue">
-                <span class="info-box-icon"><i class="fa fa-bar-chart-o"></i></span>
-    
-                <div class="info-box-content">
-                  {% if result_label != none %}
-                  <span class="info-box-text" >{{ result_label if result_label else 'Dark Coffee' }}</span>
-                  <span class="info-box-number">{{ confidence if confidence else '90' }}<small>%</small></span>
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 90%"></div>
-                  </div>
-                  <span class="progress-description">
-                    3% better than previous inference.
-                  </span>
-                  {% else %}
-                  No result to show ... 
-                  {% endif %}
-                </div>
-                <!-- /.info-box-content -->
-              </div>
+        <div class="box-footer">
+          <!-- List Counter -->
+          <ul class="no-margin no-padding pull-left">
+            {% if tableRecords.items != [] %}
+              {{ tableRecords.per_page*(tableRecords.page - 1) + 1 }} 
+              to 
+              {{ tableRecords.per_page*tableRecords.page if tableRecords.per_page*tableRecords.page <= count else count }}
+              of 
+              {{ count }} 
+              records
+            {% else %}
+              No record to show...
+            {% endif%}
+            </ul>
+          
+          <!-- Pagination -->
+          <ul class="pagination pagination-sm no-margin pull-right">
+            {% if tableRecords.pages > 0  %}
+              <li class="paginate_button {{ 'disabled' if tableRecords.prev_num is none }}">
+                <a href="{{ url_for('upload.index', page=tableRecords.prev_num) if tableRecords.prev_num is not none else '#'}}">«</a>
+              </li>
+              {% for i in range(min_page_show, max_page_show) %}
+                <li class="paginate_button {{ 'active' if i == tableRecords.page }}">
+                  <a href="{{ url_for('upload.index', page=i) }}">{{ i }}</a>
+                </li>
+              {% endfor %}
+              <li class="paginate_button {{ 'disabled' if tableRecords.next_num is none }}">
+                <a href="{{ url_for('upload.index', page=tableRecords.next_num) if tableRecords.next_num is not none else '#'}}">»</a>
+              </li>
+            {% endif %}
+          </ul>
         </div>
         <!-- /.box-footer-->
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="box box-primary">
-        <div class="box-header with-border">
-          <h3 class="box-title">Feature Data
-          </h3>
-        </div>
-        <!-- /.box-header -->
-        <div class="box-body">
-                        <!-- GLCM Tablerecords -->
-                        {% if glcmRecords.first() != none %}
-                        <div class="box-body table-responsive no-padding my-custom-scrollbar">
-                        <table class="table table-hover">
-                            <tbody><tr>
-                            <th>Angel</th>
-                            <th>Dissimilarity</th>
-                            <th>Correlation</th>
-                            <th>Homogeneity</th>
-                            <th>Contrast</th>
-                            <th>ASM</th>
-                            <th>Energy</th>
-                            </tr>
-                            {% for record in glcmRecords  %}
-                            <tr>
-                            <td>{{ record['angel'] }}</td>
-                            <td>{{ record['dissimilarity'] }}</td>
-                            <td>{{ record['correlation'] }}</td>
-                            <td>{{ record['homogeneity'] }}</td>
-                            <td>{{ record['contrast'] }}</td>
-                            <td>{{ record['ASM'] }}</td>
-                            <td>{{ record['energy'] }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody></table>
-                        </div>
-                        {% else %}
-                        No GLCM data to show ... 
-                        {% endif %}
-        </div>
-        <!-- /.box-body -->
-      </div>
-    </div>
-    <div class="col-md-4">
-        <div class="box box-primary">
-          <div class="box-header with-border">
-            <h3 class="box-title">Explain Result
-            </h3>
-          </div>
-          <!-- /.box-header -->
-          <div class="box-body">
-            <div class="row">
-                <div class="col-md-6">
-                  <div class="chart-responsive">
-                    <canvas id="pieChart" height="155" width="205" style="width: 205px; height: 155px;"></canvas>
-                  </div>
-                  <!-- ./chart-responsive -->
-                </div>
-                <!-- /.col -->
-                <div class="col-md-6">
-                  {% if result_dict != none %}
-                  <ul class="chart-legend clearfix">
-                    {% for key in result_dict %}
-                        {% if key != 'result' %}
-                            <li><i class="fa fa-circle-o text-red"></i> {{ key }}</li>
-                        {% endif %}
-                    {% endfor %}
-                  </ul>
-                  {% endif %}
-                </div>
-                <!-- /.col -->
-              </div>
-          </div>
-          <!-- /.box-body -->
-        </div>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-md-12"></div>
   </div>
 </section>
 
+{% else %}
+  <center>
+  <section class="well transp_white center_v">
+    <div class="col-sm-12">
+      <h1>Coffe Bean Classifier App</h1>
+      <p class="lead">
+        Authentication
+      </p>
+      {% if not current_user.is_authenticated %}
+        <p>
+          <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+        </p>
+      {% endif %}
+      <br>
+    </div>
+  </section>
+  </center>
 {% endif %}
 
 {% endblock body %}
 
 {% block js_custom %}
-<script>
 
-    // -------------
-    // - PIE CHART -
-    // -------------
-    // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
-    var pieChart       = new Chart(pieChartCanvas);
-
-    // get dictionary from jinja convert to JSON
-    var dataChart      = JSON.parse('{{ result_dict|tojson|safe}}');
-    var PieData        = [];
-    var colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef'];
-    var i = 0
-    for (var key in dataChart){
-        if (key !== 'result'){
-            PieData.push({value : dataChart[key], label : key, color : colors[i]});
-            i = i + 1;
-        }
-    }
-    console.log(PieData);
-    var pieOptions     = {
-        // Boolean - Whether we should show a stroke on each segment
-        segmentShowStroke    : true,
-        // String - The colour of each segment stroke
-        segmentStrokeColor   : '#fff',
-        // Number - The width of each segment stroke
-        segmentStrokeWidth   : 1,
-        // Number - The percentage of the chart that we cut out of the middle
-        percentageInnerCutout: 50, // This is 0 for Pie charts
-        // Number - Amount of animation steps
-        animationSteps       : 100,
-        // String - Animation easing effect
-        animationEasing      : 'easeOutBounce',
-        // Boolean - Whether we animate the rotation of the Doughnut
-        animateRotate        : true,
-        // Boolean - Whether we animate scaling the Doughnut from the centre
-        animateScale         : false,
-        // Boolean - whether to make the chart responsive to window resizing
-        responsive           : true,
-        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-        maintainAspectRatio  : false,
-        // add tooltip
-        tooltipTemplate: "<%=label%> <%=value%> %"
-    };
-    // Create pie or douhnut chart
-    // You can switch between pie and douhnut using the method below.
-    pieChart.Doughnut(PieData, pieOptions);
-
-    // -----------------
-    // - END PIE CHART -
-    // -----------------
-
-</script>
 {% endblock js_custom %}

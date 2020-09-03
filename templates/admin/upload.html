@@ -59,9 +59,9 @@
                 <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" value="{{ table_search }}">
                 <div class="input-group-btn">
                   <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                </form>
+                </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
         <!-- /.box-header -->
@@ -88,10 +88,10 @@
                 <td>{{ record['upload_at'].strftime("%m/%d/%Y, %H:%M:%S") }}</td>
                 <td>{{ record['upload_by'] }}</td>
                 <td>
-                  <a href="{{ url_for('upload.delete', upload_id=record['id']) }}" class="btn btn-danger btn-xs">
+                  <a href="{{ url_for('upload.delete', upload_id=record['id'], page=request.args.get('page'))}}" class="btn btn-danger btn-xs">
                     <i class="fa fa-trash"></i>
                   </a>
-                  <a href="{{ url_for('upload.index', upload_id=record['id']) }}" class="btn btn-success btn-xs">
+                  <a href="{{ url_for('upload.index', upload_id=record['id'], page=request.args.get('page')) }}" class="btn btn-success btn-xs">
                     <i class="fa fa-eye"></i>
                   </a>
                   {% if not record['is_used'] %}
@@ -148,6 +148,23 @@
   </div>
 </section>
 
+{% else %}
+  <center>
+  <section class="well transp_white center_v">
+    <div class="col-sm-12">
+      <h1>Coffe Bean Classifier App</h1>
+      <p class="lead">
+        Authentication
+      </p>
+      {% if not current_user.is_authenticated %}
+        <p>
+          <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+        </p>
+      {% endif %}
+      <br>
+    </div>
+  </section>
+  </center>
 {% endif %}
 
 {% endblock body %}

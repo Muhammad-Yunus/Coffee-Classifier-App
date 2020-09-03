@@ -11,9 +11,9 @@ from flask_admin import BaseView, AdminIndexView, expose
 from models import db
 from models.roles import Role 
 from models.users import User
-from models.inferences import Inference
-from models.uploads import Upload 
-from models.glcms import Glcm
+# from models.inferences import Inference
+# from models.uploads import Upload 
+# from models.glcms import Glcm
 
 from forms.custom_view import MyModelView 
 from forms.users import UserView
@@ -57,7 +57,7 @@ admin.add_view(Profile(name="Profile", endpoint='profile'))
 admin.add_view(UploadForm(name="Upload", menu_icon_type='fa', menu_icon_value='fa-upload', endpoint='upload'))
 admin.add_view(GlcmForm(name="GLCM", menu_icon_type='fa', menu_icon_value='fa-braille', endpoint='glcm'))
 admin.add_view(RunInferenceForm(name="Run Inference", menu_icon_type='fa', menu_icon_value='fa-bar-chart', endpoint='run_inference'))
-admin.add_view(InferenceForm(Inference, db.session, menu_icon_type='fa', menu_icon_value='fa-database', name="History"))
+admin.add_view(InferenceForm(name="Inference History", menu_icon_type='fa', menu_icon_value='fa-database', endpoint='inference'))
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.

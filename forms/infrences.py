@@ -1,25 +1,115 @@
 from models import db
+from models import or_
 from models.inferences import Inference
 from models.uploads import Upload
 from models.glcms import Glcm
 from .custom_view import  MyModelView
 from . import BaseView, expose 
-from . import request
+from . import request, send_file
 from . import datetime
 from . import current_user
 from . import np
+from . import os
 import ast
+import csv
 
-class InferenceForm(MyModelView):
-    column_exclude_list = ['result_dict']
-    def on_model_change(self, form, Inference, is_created):
+class InferenceForm(BaseView):
+    @expose("/", methods = ["GET", "POST"])
+    def index(self):
+        page = request.args.get('page')
+        page = int(1 if page == None else page)
+        per_page = 10
 
-        if is_created:
-            Inference.run_at = datetime.now()
-            #Inference.run_by = current_user.first_name
+        table_search = ""
+        search_key = "%%"
 
-    form_excluded_columns = ['run_at', 'run_by']
+        if request.method == "POST" :
+            if 'table_search' in request.form : 
+                table_search = request.form["table_search"]
+                search_key = "%{}%".format(table_search)
+
+        tableRecords = db.session.query(
+                                Upload, Inference
+                                ).filter(
+                                    Upload.id == Inference.Upload_Id
+                                ).filter(
+                                    or_(
+                                        Upload.name.like(search_key),
+                                        Inference.result_label.like(search_key)
+                                    )
+                                ).paginate(page,per_page,error_out=False)
+        min_page_show = tableRecords.page - 2 if tableRecords.page - 2 > 0 else 1
+        max_page_show = min_page_show + 5 if min_page_show + 5 <= tableRecords.pages + 1 else tableRecords.pages + 1
+        count = db.session.query(
+                                Upload, Inference
+                                ).filter(
+                                    Upload.id == Inference.Upload_Id
+                                ).filter(
+                                    or_(
+                                        Upload.name.like(search_key),
+                                        Inference.result_label.like(search_key)
+                                    )
+                                ).count()
+
+        return self.render('admin/inference.html',
+                        tableRecords=tableRecords,                
+                        min_page_show = min_page_show, 
+                        max_page_show = max_page_show, 
+                        count = count,
+                        table_search = table_search) 
+                
+    @expose("/download/<filename>")
+    def download(self, filename):
+        tableRecords = db.session.query(
+                                Upload, Inference
+                                ).filter(
+                                    Upload.id == Inference.Upload_Id
+                                ).all()
+
+        root_path = os.path.dirname(os.path.dirname(__file__))
+        csv_path = os.path.join(root_path, 'static/csv-download', filename)
+        outfile = open(csv_path, 'w+')
+        outcsv = csv.writer(outfile)
+        # dump column titles (optional)
+        outfile.write( ('%20s, %20s, %11s, %20s, %10s') % ('Image', 'Result Label', 'Confidence', 'Run At', 'Run By\n'))
+        for record in tableRecords:
+            outfile.write(('%20s, %20s, %11s, %20s, %10s') % (record.Upload.name, record.Inference.result_label , str(record.Inference.confidence), record.Inference.run_at.strftime("%m/%d/%Y %H:%M:%S"), record.Inference.run_by + '\n'))
+
+        outfile.close()
+        response = send_file(csv_path, attachment_filename=filename, as_attachment=True, mimetype='text/csv')
+        return response
+
+    @expose("/image_download/<filename>")
+    def image_download(self, filename):
+        root_path = os.path.dirname(os.path.dirname(__file__))
+        image_path = os.path.join(root_path, 'static/image-upload', filename)
+        response = send_file(image_path, attachment_filename=filename, as_attachment=True)
+        return response
     
+    @expose("/glcm_download/<filename>")
+    def glcm_download(self, filename):
+        image_name = filename.replace(".csv", "").replace("GLCM_Image_", "")
+        form = Upload().query.filter(Upload.name == image_name).first()
+        tableRecords = Glcm().query.filter(Glcm.Upload_Id == form.id).all()
+
+        root_path = os.path.dirname(os.path.dirname(__file__))
+        csv_path = os.path.join(root_path, 'static/csv-download', filename)
+        outfile = open(csv_path, 'w+')
+        outcsv = csv.writer(outfile)
+        # dump column titles (optional)
+        outfile.write( ('%20s, %15s, %15s, %15s, %15s, %15s, %15s, %15s') % ('Image', 'Angel', 'Dissimilarity', 'Correlation', 'Homogeneity', 'Contrast', 'ASM', 'Energy\n'))
+        for record in tableRecords:
+            outfile.write(('%20s, %15s, %15s, %15s, %15s, %15s, %15s, %15s') % (form.name, str(record.angel) , str(record.dissimilarity), str(record.correlation), str(record.homogeneity), str(record.contrast), str(record.ASM), str(record.energy) + '\n'))
+
+        outfile.close()
+        response = send_file(csv_path, attachment_filename=filename, as_attachment=True, mimetype='text/csv')
+        return response
+
+
+
+
+#################################################################################################################
+
 def query_glcm(upload_id):
     tableRecords = Glcm().query.filter(Glcm.Upload_Id == upload_id)
     print("[INFO] query glcm ...", type(tableRecords))
@@ -82,7 +172,7 @@ class RunInferenceForm(BaseView):
         else :
             result_dict, result_label, confidence = None, None, None
         glcmRecords, selectedImage = query_glcm(x['upload_id'])
-        return self.render('admin/inference.html',
+        return self.render('admin/run_inference.html',
                     show_feedback = x['show_feedback'],
                     feedback_type = x['feedback_type'],
                     feedback_message = x['feedback_message'],
@@ -109,7 +199,7 @@ class RunInferenceForm(BaseView):
             formInference = select_inference(x['inference_id'])
 
         glcmRecords, selectedImage = query_glcm(x['upload_id'])
-        return self.render('admin/inference.html',
+        return self.render('admin/run_inference.html',
                     show_feedback = x['show_feedback'],
                     feedback_type = x['feedback_type'],
                     feedback_message = x['feedback_message'],

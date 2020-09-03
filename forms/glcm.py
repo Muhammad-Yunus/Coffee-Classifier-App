@@ -1,6 +1,7 @@
 from models import db
 from models.glcms import Glcm
 from models.uploads import Upload
+from models.inferences  import Inference
 from . import BaseView, expose 
 from . import request
 from . import datetime
@@ -85,6 +86,10 @@ def init(upload_id, page):
              'image_fn' : None
             }
 
+def has_inference(upload_id):
+    count = Inference().query.filter(Inference.Upload_Id == upload_id).count()
+    print ("[INFO] Inference count : ", count)
+    return True if count > 0 else False
 
 class GlcmForm(BaseView):
     @expose('/', methods=['GET','POST'])
@@ -108,7 +113,8 @@ class GlcmForm(BaseView):
                     min_page_show = min_page_show, 
                     max_page_show = max_page_show, 
                     count = count,
-                    table_search = x['table_search'])
+                    table_search = x['table_search'],
+                    has_inference = has_inference(x['upload_id']))
     
     @expose('/delete')
     def delete(self):
@@ -129,7 +135,8 @@ class GlcmForm(BaseView):
                     min_page_show = min_page_show, 
                     max_page_show = max_page_show, 
                     count = count,
-                    table_search = x['table_search'])
+                    table_search = x['table_search'],
+                    has_inference = has_inference(x['upload_id']))
 
     @expose('/calc')
     def calc(self):
@@ -157,4 +164,5 @@ class GlcmForm(BaseView):
                     min_page_show = min_page_show, 
                     max_page_show = max_page_show, 
                     count = count,
-                    table_search = x['table_search'])
+                    table_search = x['table_search'],
+                    has_inference = has_inference(x['upload_id']))

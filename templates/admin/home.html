@@ -17,68 +17,145 @@
   </ol>
 </section>
 
-
 <section class="content">
-      <div class="row">
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
-            <div class="inner">
-              <h3>150</h3>
-              <p>ML Core Service</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-social-python"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
+  <div class="row">
+    <div class="col-lg-3 col-xs-6">
+      <!-- small box -->
+      <div class="small-box bg-aqua">
+        <div class="inner">
+          <h3>{{ card.uploaded_image }}</h3>
+          <p>Uploaded Images</p>
         </div>
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-green">
-            <div class="inner">
-              <h3>76<sup style="font-size: 20px">%</sup></h3>
-              <p>Accuracy</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
+        <div class="icon">
+            <i class="ion ion-images"></i>
         </div>
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-yellow">
-            <div class="inner">
-              <h3>87</h3>
-              <p>Precission</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-red">
-            <div class="inner">
-              <h3>91</h3>
-        
-              <p>Recall</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
+        <a href="{{ url_for('upload.index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+      <!-- small box -->
+      <div class="small-box bg-green">
+        <div class="inner">
+          <h3>{{ card.generated_glcm }}</h3>
+          <p>Calculated GLCM</p>
+        </div>
+        <div class="icon">
+            <i class="fa fa-braille"></i>
+        </div>
+        <a href="{{ url_for('glcm.index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+      <!-- small box -->
+      <div class="small-box bg-yellow">
+        <div class="inner">
+          <h3>{{ card.inference_result }}</h3>
+          <p>Inference Result</p>
+        </div>
+        <div class="icon">
+            <i class="fa fa-bar-chart"></i>
+        </div>
+        <a href="{{ url_for('inference.index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+      <!-- small box -->
+      <div class="small-box bg-red">
+        <div class="inner">
+          <h3>{{ card.model }}</h3>
+    
+          <p>Trained Model</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-cube"></i>
+        </div>
+        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- /. two card -->
+  <div class="row">
+    <!-- Graph cart Inference -->
+    <div class="col-md-7">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">
+            <i class="fa fa-check-square-o"></i>
+            Inference Report
+          </h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+          
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+          
+        </div>
+        <!-- /.box-footer-->
+      </div>
+    </div>
+
+    <!-- Graph chart Model -->
+    <div class="col-md-5">
+      <div class="box box-solid bg-teal">
+        <div class="box-header ui-sortable-handle" style="cursor: move;">
+          <i class="fa fa-cube"></i>
+          <h3 class="box-title">Model Summary</h3>
+
+          <div class="box-tools pull-right">
+            <button type="button" class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn bg-teal btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="box-body border-radius-none">
+          <div class="chart" id="line-chart" style="height: 130px; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <canvas id="barChart" style="height: 130px; width: 510px;" height="150" width="510"></canvas>
+          </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer no-border">
+          <div class="row">
+            <div class="col-md-4 text-center" style="border-right: 1px solid #f4f4f4">
+              <div style="height:60px;">
+                <canvas id="pieChartAcc" width="60" height="60"></canvas>
+              </div>
+
+              <div class="knob-label">Accuracy</div>
+            </div>
+            <!-- ./col -->
+            <div class="col-md-4 text-center" style="border-right: 1px solid #f4f4f4">
+              <div style="height:60px;">
+                <canvas id="pieChartPrec" width="60" height="60"></canvas>
+              </div>
+
+              <div class="knob-label">Precision</div>
+            </div>
+            <!-- ./col -->
+            <div class="col-md-4 text-center">
+              <div style="height:60px;">
+                <canvas id="pieChartRec" width="60" height="60"></canvas>
+              </div>
+
+              <div class="knob-label">Recall</div>
+            </div>
+            <!-- ./col -->
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.box-footer -->
+      </div>
+    </div>
+  </div>
+
 </section>
+
 <!-- /.content -->
 {% else %}
-
-<center>
+  <center>
   <section class="well transp_white center_v">
     <div class="col-sm-12">
       <h1>Coffe Bean Classifier App</h1>
@@ -89,14 +166,188 @@
         <p>
           <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
         </p>
-        {% endif %}
-        <br>
-      </div>
-    </section>
+      {% endif %}
+      <br>
+    </div>
+  </section>
   </center>
-
   <br><br><br><br><br><br><br><br><br>
   <br><br><br><br><br><br><br><br><br><br>
-  {% endif %}
+{% endif %}
 
-  {% endblock body %}
+{% endblock body %}
+
+
+{% block js_custom %}
+<script>
+
+    Chart.defaults.global.defaultFontSize = 18;
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var barChartCanvas    = $('#barChart').get(0).getContext('2d')
+    var barChart          = new Chart(barChartCanvas)
+    var barChartData      =  {
+                            labels  : ['Ligth', 'Medium', 'Medium Dark', 'Dark'],
+                            datasets: [
+                              {
+                                label               : 'Accuracy',
+                                fillColor           : '#fff',
+                                strokeColor         : '#fff',
+                                pointColor          : '#fff',
+                                pointStrokeColor    : '#fff',
+                                pointHighlightFill  : '#fff',
+                                pointHighlightStroke: '#fff',
+                                data                : [91, 95, 97, 94]
+                              },
+                              {
+                                label               : 'Precision',
+                                fillColor           : '#ddd',
+                                strokeColor         : '#ddd',
+                                pointColor          : '#ddd',
+                                pointStrokeColor    : '#ddd',
+                                pointHighlightFill  : '#fff',
+                                pointHighlightStroke: '#ddd',
+                                data                : [75, 87, 67, 98]
+                              },
+                              {
+                                label               : 'Recall',
+                                fillColor           : '#bbb',
+                                strokeColor         : '#bbb',
+                                pointColor          : '#bbb',
+                                pointStrokeColor    : '#bbb',
+                                pointHighlightFill  : '#bbb',
+                                pointHighlightStroke: '#bbb',
+                                data                : [78, 45, 67, 86]
+                              }
+                            ]
+                          }
+
+    var barChartOptions                  = {
+      //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+      scaleBeginAtZero        : true,
+      //Boolean - Whether grid lines are shown across the chart
+      scaleShowGridLines      : false,
+      //String - Colour of the grid lines
+      scaleGridLineColor      : '#fff',
+      //Number - Width of the grid lines
+      scaleGridLineWidth      : 1,
+      //Boolean - Whether to show horizontal lines (except X axis)
+      scaleShowHorizontalLines: false,
+      //Boolean - Whether to show vertical lines (except Y axis)
+      scaleShowVerticalLines  : false,
+      // Color - Change bar chart color setting
+      scaleLineColor          : '#fff',
+      scaleFontColor          : "#fff",
+      //Boolean - If there is a stroke on each bar
+      barShowStroke           : false,
+      //Number - Pixel width of the bar stroke
+      barStrokeWidth          : 0,
+      //Number - Spacing between each of the X value sets
+      barValueSpacing         : 10,
+      //Number - Spacing between data sets within X values
+      barDatasetSpacing       : 4 ,
+      //Boolean - whether to make the chart responsive
+      responsive              : true,
+      maintainAspectRatio     : true,
+   
+    }
+
+    barChartOptions.datasetFill = false
+    barChart.Bar(barChartData, barChartOptions)
+
+
+    // - End Bar Chart -
+    // -----------------
+
+    // -------------
+    // - PIE CHART -
+    // -------------
+    // - Accuracy -
+    var CanvasAcc = $('#pieChartAcc').get(0).getContext('2d');
+    var pieChartAcc      = new Chart(CanvasAcc);
+
+    // get dictionary from jinja convert to JSON
+    var dataChartAcc      = {"_" : 3,
+                          "accuracy" : 97};
+    var PieDataAcc        = []
+    var colors = ['#ddd', '#39cccc'];
+    var i = 0;
+    for (var key in dataChartAcc){
+        if (key !== 'result'){
+            PieDataAcc.push({value : dataChartAcc[key], label : key, color : colors[i]});
+            i = i + 1;
+        }
+    }
+
+    // - Precision
+    var CanvasPrec = $('#pieChartPrec').get(0).getContext('2d');
+    var pieChartPrec      = new Chart(CanvasPrec);
+
+    // get dictionary from jinja convert to JSON
+    var dataChartPrec      = {"_" : 15,
+                          "precision" : 85};
+    var PieDataPrec        = []
+    var colors = ['#ddd', '#39cccc'];
+    var i = 0;
+    for (var key in dataChartPrec){
+        if (key !== 'result'){
+            PieDataPrec.push({value : dataChartPrec[key], label : key, color : colors[i]});
+            i = i + 1;
+        }
+    }
+
+    // - Precision
+    var CanvasRec = $('#pieChartRec').get(0).getContext('2d');
+    var pieChartRec      = new Chart(CanvasRec);
+
+    // get dictionary from jinja convert to JSON
+    var dataChartRec      = {"_" : 11,
+                          "precision" : 89};
+    var PieDataRec        = []
+    var colors = ['#ddd', '#39cccc'];
+    var i = 0;
+    for (var key in dataChartRec){
+        if (key !== 'result'){
+            PieDataRec.push({value : dataChartRec[key], label : key, color : colors[i]});
+            i = i + 1;
+        }
+    }
+
+    var pieOptions     = {
+        // Boolean - Whether we should show a stroke on each segment
+        segmentShowStroke    : true,
+        // String - The colour of each segment stroke
+        segmentStrokeColor   : '#fff',
+        // Number - The width of each segment stroke
+        segmentStrokeWidth   : 1,
+        // Number - The percentage of the chart that we cut out of the middle
+        percentageInnerCutout: 50, // This is 0 for Pie charts
+        // Number - Amount of animation steps
+        animationSteps       : 100,
+        // String - Animation easing effect
+        animationEasing      : 'easeOutBounce',
+        // Boolean - Whether we animate the rotation of the Doughnut
+        animateRotate        : true,
+        // Boolean - Whether we animate scaling the Doughnut from the centre
+        animateScale         : false,
+        // Boolean - whether to make the chart responsive to window resizing
+        responsive           : true,
+        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+        maintainAspectRatio  : false,
+        // add tooltip
+    };
+    // Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    pieChartAcc.Doughnut(PieDataAcc, pieOptions);
+    pieChartPrec.Doughnut(PieDataPrec, pieOptions);
+    pieChartRec.Doughnut(PieDataRec, pieOptions);
+    // -----------------
+    // - END PIE CHART -
+    // -----------------
+
+
+
+</script>
+
+{% endblock js_custom %}

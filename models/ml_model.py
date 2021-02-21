@@ -4,6 +4,8 @@ from . import UserMixin
 class MLModel(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
+    model_filename = db.Column(db.String(255))
+    report_filename = db.Column(db.String(255))
     precision = db.Column(db.Float(6))
     recall = db.Column(db.Float(6))
     accuracy = db.Column(db.Float(6))
@@ -19,7 +21,7 @@ class ModelReport(db.Model, UserMixin):
     recall = db.Column(db.Float(6))
     mlmodel_id = db.Column(db.Integer)
 
-class TraingHistory(db.Model, UserMixin):
+class TrainigHistory(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     mlmodel_id = db.Column(db.Integer)
     name = db.Column(db.String(255))

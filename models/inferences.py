@@ -11,4 +11,4 @@ class Inference(db.Model, UserMixin):
     run_by = db.Column(db.String(255))
 
     def __str__(self):
-        return self.email
+        return self.id

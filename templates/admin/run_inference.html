@@ -39,7 +39,7 @@
                     <div class="progress-bar" style="width: 90%"></div>
                   </div>
                   <span class="progress-description">
-                    3% better than previous inference.
+                    Highest confidence level for all class.
                   </span>
                   {% else %}
                   No result to show ... 
@@ -106,22 +106,10 @@
           <div class="box-body">
             <div class="row">
                 <div class="col-md-6">
-                  <div class="chart-responsive">
-                    <canvas id="pieChart" height="155" width="205" style="width: 205px; height: 155px;"></canvas>
+                  <div class="chart-responsive" style="width: 300px !important; height: 300px !important;">
+                    <canvas id="barChart" height="300" width="300"></canvas>
                   </div>
                   <!-- ./chart-responsive -->
-                </div>
-                <!-- /.col -->
-                <div class="col-md-6">
-                  {% if result_dict != none %}
-                  <ul class="chart-legend clearfix">
-                    {% for key in result_dict %}
-                        {% if key != 'result' %}
-                            <li><i class="fa fa-circle-o text-red"></i> {{ key }}</li>
-                        {% endif %}
-                    {% endfor %}
-                  </ul>
-                  {% endif %}
                 </div>
                 <!-- /.col -->
               </div>
@@ -137,20 +125,20 @@
 
 {% else %}
   <center>
-  <section class="well transp_white center_v">
-    <div class="col-sm-12">
-      <h1>Coffe Bean Classifier App</h1>
-      <p class="lead">
-        Authentication
-      </p>
-      {% if not current_user.is_authenticated %}
-        <p>
-          <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+    <section class="well transp_white center_v">
+      <div class="col-sm-12">
+        <h1>Coffe Bean Classifier App</h1>
+        <p class="lead">
+          Authentication
         </p>
-      {% endif %}
-      <br>
-    </div>
-  </section>
+        {% if not current_user.is_authenticated %}
+          <p>
+            <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+          </p>
+        {% endif %}
+        <br>
+      </div>
+    </section>
   </center>
 {% endif %}
 
@@ -159,56 +147,60 @@
 {% block js_custom %}
 <script>
 
-    // -------------
-    // - PIE CHART -
-    // -------------
-    // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
-    var pieChart       = new Chart(pieChartCanvas);
-
-    // get dictionary from jinja convert to JSON
+    //-------------
+    //- BAR CHART -
+    //-------------
     var dataChart      = JSON.parse('{{ result_dict|tojson|safe}}');
-    var PieData        = [];
+    var BarData        = [];
+    var BarLabel       = [];
     var colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef'];
-    var i = 0
     for (var key in dataChart){
         if (key !== 'result'){
-            PieData.push({value : dataChart[key], label : key, color : colors[i]});
-            i = i + 1;
+          BarData.push(dataChart[key]);
+          BarLabel.push(key.split(" ")[0]);
         }
     }
-    console.log(PieData);
-    var pieOptions     = {
-        // Boolean - Whether we should show a stroke on each segment
-        segmentShowStroke    : true,
-        // String - The colour of each segment stroke
-        segmentStrokeColor   : '#fff',
-        // Number - The width of each segment stroke
-        segmentStrokeWidth   : 1,
-        // Number - The percentage of the chart that we cut out of the middle
-        percentageInnerCutout: 50, // This is 0 for Pie charts
-        // Number - Amount of animation steps
-        animationSteps       : 100,
-        // String - Animation easing effect
-        animationEasing      : 'easeOutBounce',
-        // Boolean - Whether we animate the rotation of the Doughnut
-        animateRotate        : true,
-        // Boolean - Whether we animate scaling the Doughnut from the centre
-        animateScale         : false,
-        // Boolean - whether to make the chart responsive to window resizing
-        responsive           : true,
-        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-        maintainAspectRatio  : false,
-        // add tooltip
-        tooltipTemplate: "<%=label%> <%=value%> %"
-    };
-    // Create pie or douhnut chart
-    // You can switch between pie and douhnut using the method below.
-    pieChart.Doughnut(PieData, pieOptions);
+    console.log(BarData);
+    var barChartCanvas                   = $('#barChart').get(0).getContext('2d')
+    var barChart                         = new Chart(barChartCanvas)
+    var barChartData                     = {
+                                              labels  : BarLabel,
+                                              datasets : [{
+                                                label : "confidence",
+                                                fillColor : colors,
+                                                data : BarData
+                                              }]
+                                            }
+    var barChartOptions                  = {
+      //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+      scaleBeginAtZero        : true,
+      //Boolean - Whether grid lines are shown across the chart
+      scaleShowGridLines      : true,
+      //String - Colour of the grid lines
+      scaleGridLineColor      : 'rgba(0,0,0,.05)',
+      //Number - Width of the grid lines
+      scaleGridLineWidth      : 1,
+      //Boolean - Whether to show horizontal lines (except X axis)
+      scaleShowHorizontalLines: true,
+      //Boolean - Whether to show vertical lines (except Y axis)
+      scaleShowVerticalLines  : true,
+      //Boolean - If there is a stroke on each bar
+      barShowStroke           : true,
+      //Number - Pixel width of the bar stroke
+      barStrokeWidth          : 2,
+      //Number - Spacing between each of the X value sets
+      barValueSpacing         : 5,
+      //Number - Spacing between data sets within X values
+      barDatasetSpacing       : 1,
+      //String - A legend template
+      legendTemplate          : "<%=label%> <%=value%> %%",
+      //Boolean - whether to make the chart responsive
+      responsive              : true,
+      maintainAspectRatio     : true
+    }
 
-    // -----------------
-    // - END PIE CHART -
-    // -----------------
+    barChartOptions.datasetFill = false
+    barChart.Bar(barChartData, barChartOptions);
 
 </script>
 {% endblock js_custom %}

@@ -1,0 +1,136 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+
+{% if current_user.is_authenticated %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    <i class="fa fa-cube"></i>
+    Upload a New Model 
+  </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">New Model</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form class="form-horizontal">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="inputName" class="col-sm-3 control-label">Name</label>
+            
+                            <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputName" placeholder="" value = "{{ form.name }}">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:10px">
+                            <label for="inputName" class="col-sm-3 control-label">Model Binary</label>
+                            <div class=" col-sm-5">
+                                <div class="input-group">
+                                    <label class="btn btn-primary form-control" for="my-model-selector">
+                                        <input name="model_file" id="my-model-selector" type="file" style="display:none">
+                                        <i class="fa fa-cloud-upload"></i>
+                                        Browse Model
+                                    </label>
+                                    <div class="input-group-addon" id="upload-model-info">no file selected.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:10px">
+                            <label for="inputName" class="col-sm-3 control-label">Model Report</label>
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <label class="btn btn-primary form-control" for="my-file-selector">
+                                        <input name="report_file" id="my-file-selector" type="file" style="display:none">
+                                        <i class="fa fa-cloud-upload"></i>
+                                        Browse Report
+                                    </label>
+                                    <div class="input-group-addon" id="upload-report-info">no file selected.</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if form %}
+                        <div class="form-group" style="margin-top:10px">
+                            <label class="col-sm-3 control-label">Create By</label>
+                            <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="" value = "{{ form.create_by }}" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:10px">
+                            <label class="col-sm-3 control-label">Create On</label>
+                            <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="" value = "{{ form.create_on }}" disabled>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                    <button type="submit" class="btn btn-default">Cancel</button>
+                    <button type="submit" class="btn btn-info pull-right">Save</button>
+                    </div>
+                    <!-- /.box-footer -->
+                </form>
+            </div>        
+        </div>
+    </div>
+</section>
+
+{% else %}
+  <center>
+  <section class="well transp_white center_v">
+    <div class="col-sm-12">
+      <h1>Coffe Bean Classifier App</h1>
+      <p class="lead">
+        Authentication
+      </p>
+      {% if not current_user.is_authenticated %}
+        <p>
+          <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+        </p>
+      {% endif %}
+      <br>
+    </div>
+  </section>
+  </center>
+{% endif %}
+
+{% endblock body %}
+
+{% block js_custom %}
+<script>
+    $('#my-model-selector').on("change", function(){ 
+      if (this.files[0].name.length > 20){
+        $('#upload-model-info').html("..." + this.files[0].name.substr(-20));
+      }
+      else {
+        $('#upload-model-info').html(this.files[0].name);
+      }
+     });
+
+     $('#my-report-selector').on("change", function(){ 
+      if (this.files[0].name.length > 20){
+        $('#upload-report-info').html("..." + this.files[0].name.substr(-20));
+      }
+      else {
+        $('#upload-report-info').html(this.files[0].name);
+      }
+     });
+
+    // enable submit button when file input on change
+    $('input[type=file]').change(function(){
+        if($('input[type=file]').val()==''){
+            $('button').attr('disabled',true)
+        } 
+        else{
+        $('button').attr('disabled',false);
+        }
+    });
+</script>
+{% endblock js_custom %}

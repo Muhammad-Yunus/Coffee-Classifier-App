@@ -1,3 +1,4 @@
+from . import predictor
 from models import db
 from models import or_
 from models.inferences import Inference
@@ -105,9 +106,6 @@ class InferenceForm(BaseView):
         response = send_file(csv_path, attachment_filename=filename, as_attachment=True, mimetype='text/csv')
         return response
 
-
-
-
 #################################################################################################################
 
 def query_glcm(upload_id):
@@ -120,14 +118,26 @@ def query_glcm(upload_id):
     return tableRecords,  selectedImage
 
 def run_inference(upload_id):
-    inference = {
-        "Dark Coffee" : 95,
-        "Light Coffee" : 14,
-        "Medium Coffee" : 15,
-        "Medium Dark Coffee" : 21,
-        "result" : "Dark Coffee"
-    }
-    return inference, inference['result'], inference[inference['result']]
+    glcm_data = Glcm().query.filter(Glcm.Upload_Id == upload_id)
+    X = []
+    for item in glcm_data:
+        X.append(item.dissimilarity)
+    for item in glcm_data:   
+        X.append(item.correlation)
+    for item in glcm_data:
+        X.append(item.homogeneity)
+    for item in glcm_data:
+        X.append(item.contrast)
+    for item in glcm_data:
+        X.append(item.ASM)
+    for item in glcm_data:
+        X.append(item.energy)
+
+    inference, coffe_name, confidence = predictor.predict_coffe_core(np.array(X))
+    print("[INFO] prediction result ", inference)
+
+    inference['result'] = coffe_name
+    return inference, coffe_name, confidence
 
 def insert_inference(data):
     form = Inference(Upload_Id = data['upload_id'], 
@@ -144,6 +154,10 @@ def insert_inference(data):
 
 def select_inference(inference_id):
     form = Inference().query.get(inference_id)
+    return form
+
+def select_inference_by_upload_id(upload_id):
+    form = Inference().query.filter(Inference.Upload_Id == upload_id).first()
     return form
 
 def init(upload_id, inference_id):
@@ -164,7 +178,11 @@ class RunInferenceForm(BaseView):
     def index(self):
         x = init(request.args.get('upload_id'), request.args.get('inference_id'))
 
+        if (x['inference_id'] == 0 or x['inference_id'] == None) and (x['upload_id'] > 0 ) :
+            x['inference_id'] = select_inference_by_upload_id(x['upload_id']).id
+
         formInference = select_inference(x['inference_id'])
+
         if formInference is not None :
             x['upload_id'] = formInference.Upload_Id
             result_dict, result_label, confidence = \

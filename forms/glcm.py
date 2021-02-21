@@ -1,3 +1,5 @@
+from core_ml.main import calc_glcm_core
+
 from models import db
 from models.glcms import Glcm
 from models.uploads import Upload
@@ -7,6 +9,7 @@ from . import request
 from . import datetime
 from . import current_user
 from . import np
+import os
 
 def query_upload(page,per_page, search_key="%%"):
     tableRecords = Upload().query.filter(Upload.name.like(search_key)) \
@@ -43,29 +46,29 @@ def delete_glcm(upload_id):
     return True, "success", feedback_message
 
 def calc_glcm(upload_id):
-    print("[INFO] clac glcm starting...", upload_id)
-    # dummy calc
+    form = Upload.query.get(upload_id)
+    print("[INFO] clac glcm starting...", upload_id, form.name)
+    features = calc_glcm_core("static/image-upload/" + form.name)
     records = [Glcm(
-                angel=45, 
-                dissimilarity = 0.4526 + np.random.randint(100),
-                correlation = 4.87642 + np.random.randint(100),
-                homogeneity = 0.0123 + np.random.randint(100),
-                contrast = 4.9729 + np.random.randint(100),
-                ASM = 12.879853 + np.random.randint(100),
-                energy = 0.00332 + np.random.randint(100),
+                angel=int(angel), 
+                dissimilarity = features[angel]['dissimilarity'],
+                correlation = features[angel]['correlation'],
+                homogeneity = features[angel]['homogeneity'],
+                contrast = features[angel]['contrast'],
+                ASM = features[angel]['ASM'],
+                energy = features[angel]['energy'],
                 calc_at = datetime.now(),
                 calc_by = current_user.first_name,
                 Upload_Id = upload_id
-                )]
+                ) for angel in features]     
 
     #insert to GLCM table
     for record in records:
         db.session.add(record)
         db.session.commit()
 
-    form = Upload.query.get(upload_id)
+    
     form.is_used = True
-    db.session.add(record)
     db.session.commit()
     
     feedback_message = "GLCM generated from image " + form.name + " created successfully!"

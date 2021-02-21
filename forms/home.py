@@ -2,7 +2,7 @@ from models import db
 from models.inferences import Inference
 from models.uploads import Upload
 from models.glcms import Glcm
-from models.ml_model import MLModel, ModelReport, TraingHistory
+from models.ml_model import MLModel, ModelReport, TrainigHistory
 from . import AdminIndexView, expose 
 from . import request
 from . import datetime
@@ -27,7 +27,7 @@ class MyHomeView(AdminIndexView):
             'uploaded_image' : uploaded_image,
             'generated_glcm' : generated_glcm,
             'inference_result' : inference_result,
-            'model' : 3
+            'model' : 1
         }
         return self.render('admin/home.html',
                             card = card)

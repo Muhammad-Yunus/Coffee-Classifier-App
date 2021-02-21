@@ -22,6 +22,7 @@ from forms.home import MyHomeView
 from forms.infrences import InferenceForm, RunInferenceForm
 from forms.upload import UploadForm
 from forms.glcm import GlcmForm
+from forms.ml_model import MLModelForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -51,13 +52,14 @@ admin = flask_admin.Admin(
 
 
 # Add model views
-admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
-admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
-admin.add_view(Profile(name="Profile", endpoint='profile'))
 admin.add_view(UploadForm(name="Upload", menu_icon_type='fa', menu_icon_value='fa-upload', endpoint='upload'))
 admin.add_view(GlcmForm(name="GLCM", menu_icon_type='fa', menu_icon_value='fa-braille', endpoint='glcm'))
 admin.add_view(RunInferenceForm(name="Run Inference", menu_icon_type='fa', menu_icon_value='fa-bar-chart', endpoint='run_inference'))
 admin.add_view(InferenceForm(name="Inference History", menu_icon_type='fa', menu_icon_value='fa-database', endpoint='inference'))
+#admin.add_view(MLModelForm(name="ML Models", menu_icon_type='fa', menu_icon_value='fa-cubes', endpoint='ml_model'))
+admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
+admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
+admin.add_view(Profile(name="Profile", endpoint='profile'))
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.
@@ -108,4 +110,4 @@ if __name__ == '__main__':
         build_sample_db()
     
     # Start app
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', threaded=False)
